@@ -1,40 +1,58 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Rate-Limited Load Balancer
+
+A high-performance rate-limited load balancer implemented in Bun.js that distributes requests across multiple backend servers using round-robin load balancing.
+
+## Features
+
+- Round-robin load balancing
+- IP-based rate limiting
+- Health checks for backend servers
+- In-memory rate limiting (easily swappable with Redis)
+- Automatic pruning of expired rate limit entries
+
+## Configuration
+
+The load balancer is configured with the following default settings:
+
+- Load balancer port: 8080
+- Backend servers:
+  - http://localhost:3001
+  - http://localhost:3002
+- Rate limit: 5 requests per 10 seconds per IP
+- Health check interval: 10 seconds
 
 ## Getting Started
 
-First, run the development server:
+1. Install dependencies:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+   ```bash
+   bun install
+   ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Start the load balancer:
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+   ```bash
+   bun run start
+   ```
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+   For development with hot reload:
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+   ```bash
+   bun run dev
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## API Responses
 
-## Learn More
+- `200 OK`: Successful request forwarded to backend
+- `429 Too Many Requests`: Rate limit exceeded
+- `503 Service Unavailable`: All backend servers are down
 
-To learn more about Next.js, take a look at the following resources:
+## Architecture
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The project is structured into several modules:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- `server.ts`: Main server implementation
+- `loadBalancer.ts`: Round-robin load balancing logic
+- `rateLimiter.ts`: Rate limiting implementation
+- `healthChecker.ts`: Backend server health monitoring
+- `config.ts`: Configuration settings
